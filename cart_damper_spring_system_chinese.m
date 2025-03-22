@@ -31,38 +31,38 @@ dec_rou_y = 0.2;    % 输出欺骗攻击概率
 dec_rou_u = 0.25;   % 输入欺骗攻击概率
 DoS_rou_y = 0.15;   % 输出DoS攻击概率
 DoS_rou_u = 0.1;    % 输入DoS攻击概率
-% tao_xk = ones(1,L); % 传感器到控制器的DoS攻击延时
-% tao_uk = ones(1,L); % 控制器到执行器的DoS攻击延时
+tao_xk = ones(1,L); % 传感器到控制器的DoS攻击延时
+tao_uk = ones(1,L); % 控制器到执行器的DoS攻击延时
 
 %% 攻击初始化
-% s_c_decattack = zeros(1,L);% 传感器到控制器欺骗攻击序列
-% c_a_decattack = zeros(1,L);% 控制器到执行器欺骗攻击序列
-% s_c_DoSattack = zeros(1,L);% 传感器到控制器DoS攻击序列
-% c_a_DoSattack = zeros(1,L);% 控制器到执行器DoS攻击序列
+s_c_decattack = zeros(1,L);% 传感器到控制器欺骗攻击序列
+c_a_decattack = zeros(1,L);% 控制器到执行器欺骗攻击序列
+s_c_DoSattack = zeros(1,L);% 传感器到控制器DoS攻击序列
+c_a_DoSattack = zeros(1,L);% 控制器到执行器DoS攻击序列
 wx = zeros(1,L);           % 传感器到控制器欺骗攻击扰动序列
 wu = zeros(1,L);           % 控制器到执行器欺骗攻击扰动序列
 
 %% 攻击序列
 for k=1:L
-%     s_c_decattack(k) = randsrc(1,1,[1,0;dec_rou_y,1-dec_rou_y]);
-%     c_a_decattack(k) = randsrc(1,1,[1,0;dec_rou_u,1-dec_rou_u]);
-%     
-%     s_c_DoSattack(k) = randsrc(1,1,[1,0;DoS_rou_y,1-DoS_rou_y]);
-%     c_a_DoSattack(k) = randsrc(1,1,[1,0;DoS_rou_u,1-DoS_rou_u]);
-% 
-%     tao_xk(1,k) = round(rand(1,1)*(tao_x-1))+1;
-%     tao_uk(1,k) = round(rand(1,1)*(tao_u-1))+1;
+    s_c_decattack(k) = randsrc(1,1,[1,0;dec_rou_y,1-dec_rou_y]);
+    c_a_decattack(k) = randsrc(1,1,[1,0;dec_rou_u,1-dec_rou_u]);
+    
+    s_c_DoSattack(k) = randsrc(1,1,[1,0;DoS_rou_y,1-DoS_rou_y]);
+    c_a_DoSattack(k) = randsrc(1,1,[1,0;DoS_rou_u,1-DoS_rou_u]);
+
+    tao_xk(1,k) = round(rand(1,1)*(tao_x-1))+1;
+    tao_uk(1,k) = round(rand(1,1)*(tao_u-1))+1;
 
     wx(:,k) = 0.5*sin(k);
     wu(:,k) = 0.1*cos(k);
 end
 
-load("c_a_decattack.mat")% 控制器到执行器DoS攻击序列
-load("c_a_DoSattack.mat")% 控制器到执行器欺骗攻击序列
-load("s_c_decattack.mat")% 传感器到控制器欺骗攻击序列
-load("s_c_DoSattack.mat")% 传感器到控制器DoS攻击序列
-load("tao_uk.mat")       % 控制器到执行器的DoS攻击延时
-load("tao_xk.mat")       % 传感器到控制器的DoS攻击延时
+% load("c_a_decattack.mat")% 控制器到执行器DoS攻击序列
+% load("c_a_DoSattack.mat")% 控制器到执行器欺骗攻击序列
+% load("s_c_decattack.mat")% 传感器到控制器欺骗攻击序列
+% load("s_c_DoSattack.mat")% 传感器到控制器DoS攻击序列
+% load("tao_uk.mat")       % 控制器到执行器的DoS攻击延时
+% load("tao_xk.mat")       % 传感器到控制器的DoS攻击延时
 
 %% proposed method
 x(:,1)=[-1.2;1.2];            % 系统状态参数初值
@@ -96,7 +96,7 @@ for k=1:L
         x_n = (1-s_c_DoSattack(k))*(x(:,k)+e(:,k)+s_c_decattack(k)*(-2*x(:,k)-2*e(:,k)+wx(:,k))) ... 
             +s_c_DoSattack(k)*(xk(:,tao_xk(k))+ek(:,tao_xk(k))+s_c_decattack(k)*(-2*xk(:,tao_xk(k)) ...
             -2*ek(:,tao_xk(k))+wxk(:,tao_xk(k)))); % 检测机制接收值
-        if norm((xp(:,k)-x_n),2)^2 >= 0.5          % 检测机制判断
+        if norm((xp(:,k)-x_n),2)^2 >= 0.3          % 检测机制判断
             xp(:,k) = xp(:,k);
         else
             xp(:,k) = x_n;
