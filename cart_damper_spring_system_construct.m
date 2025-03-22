@@ -32,38 +32,38 @@ dec_rou_y = 0.2;    % Probability of Output deception Attack
 dec_rou_u = 0.25;   % Probability of input deception Attack
 DoS_rou_y = 0.15;   % Probability of Output DoS Attack
 DoS_rou_u = 0.1;    % Probability of input DoS Attack
-% tao_xk = ones(1,L); % Delay of DoS Attack from Sensor to Controller
-% tao_uk = ones(1,L); % Delay of DoS Attack from Controller to Actuator
+tao_xk = ones(1,L); % Delay of DoS Attack from Sensor to Controller
+tao_uk = ones(1,L); % Delay of DoS Attack from Controller to Actuator
 
 %% 攻击初始化
-% s_c_decattack = zeros(1,L);% Sensor-to-controller deception attack sequence
-% c_a_decattack = zeros(1,L);% Controller-to-actuator deception attack sequence
-% s_c_DoSattack = zeros(1,L);% Sensor-to-controller DoS attack sequence
-% c_a_DoSattack = zeros(1,L);% Controller-to-actuator DoS attack sequence
+s_c_decattack = zeros(1,L);% Sensor-to-controller deception attack sequence
+c_a_decattack = zeros(1,L);% Controller-to-actuator deception attack sequence
+s_c_DoSattack = zeros(1,L);% Sensor-to-controller DoS attack sequence
+c_a_DoSattack = zeros(1,L);% Controller-to-actuator DoS attack sequence
 wx = zeros(1,L);           % Sensor-to-controller deception attack disturbance sequence
 wu = zeros(1,L);           % Controller-to-actuator deception attack disturbance sequence
 
 %% 攻击序列
 for k=1:L
-%     s_c_decattack(k) = randsrc(1,1,[1,0;dec_rou_y,1-dec_rou_y]);
-%     c_a_decattack(k) = randsrc(1,1,[1,0;dec_rou_u,1-dec_rou_u]);
-%     
-%     s_c_DoSattack(k) = randsrc(1,1,[1,0;DoS_rou_y,1-DoS_rou_y]);
-%     c_a_DoSattack(k) = randsrc(1,1,[1,0;DoS_rou_u,1-DoS_rou_u]);
-% 
-%     tao_xk(1,k) = round(rand(1,1)*(tao_x-1))+1;
-%     tao_uk(1,k) = round(rand(1,1)*(tao_u-1))+1;
+    s_c_decattack(k) = randsrc(1,1,[1,0;dec_rou_y,1-dec_rou_y]);
+    c_a_decattack(k) = randsrc(1,1,[1,0;dec_rou_u,1-dec_rou_u]);
+
+    s_c_DoSattack(k) = randsrc(1,1,[1,0;DoS_rou_y,1-DoS_rou_y]);
+    c_a_DoSattack(k) = randsrc(1,1,[1,0;DoS_rou_u,1-DoS_rou_u]);
+
+    tao_xk(1,k) = round(rand(1,1)*(tao_x-1))+1;
+    tao_uk(1,k) = round(rand(1,1)*(tao_u-1))+1;
 
     wx(:,k) = 0.5*sin(k);
     wu(:,k) = 0.1*cos(k);
 end
 
-load("c_a_decattack.mat")% Controller-to-actuator deception attack sequence
-load("c_a_DoSattack.mat")% Controller-to-actuator DoS attack sequence
-load("s_c_decattack.mat")% Sensor-to-controller deception attack sequence
-load("s_c_DoSattack.mat")% Sensor-to-controller DoS attack sequence
-load("tao_uk.mat")       % Delay of DoS Attack from Controller to Actuator
-load("tao_xk.mat")       % Delay of DoS Attack from Sensor to Controller
+% load("c_a_decattack.mat")% Controller-to-actuator deception attack sequence
+% load("c_a_DoSattack.mat")% Controller-to-actuator DoS attack sequence
+% load("s_c_decattack.mat")% Sensor-to-controller deception attack sequence
+% load("s_c_DoSattack.mat")% Sensor-to-controller DoS attack sequence
+% load("tao_uk.mat")       % Delay of DoS Attack from Controller to Actuator
+% load("tao_xk.mat")       % Delay of DoS Attack from Sensor to Controller
 
 %% proposed method
 %% Assume that the nonlinear term is basically constant in the prediction domain
@@ -91,8 +91,9 @@ sum_e = 0;                    % An error in the synthetic state has been identif
 
 %% Perform the operation
 for k=1:L
+    e(:,k) = xjk-x(:,k);
     %%  The control action is recalculated when triggered u(k)
-    if norm(xjk-x(:,k),2)^2 >= eipilon+1/deta*zeta
+    if norm(e(:,k),2)^2 >= eipilon+1/deta*zeta
         xjk = x(:,k);                              % Update the status of the most recent trigger
         e(:,k) = xjk-x(:,k);
         x_n = (1-s_c_DoSattack(k))*(x(:,k)+e(:,k)+s_c_decattack(k)*(-2*x(:,k)-2*e(:,k)+wx(:,k))) ... 
@@ -188,8 +189,9 @@ sum_e1 = 0;                    % An error in the synthetic state has been identi
 
 %% Perform the operation
 for k=1:L
+    e1(:,k) = xjk1-x1(:,k);
     %%  The control action is recalculated when triggered u(k)
-    if norm(xjk1-x1(:,k),2)^2 >= eipilon1+1/deta1*zeta1
+    if norm(e1(:,k),2)^2 >= eipilon1+1/deta1*zeta1
         xjk1 = x1(:,k);                              % Update the status of the most recent trigger
         e1(:,k) = xjk1-x1(:,k);
         x_n = (1-s_c_DoSattack(k))*(x1(:,k)+e1(:,k)+s_c_decattack(k)*(-2*x1(:,k)-2*e1(:,k)+wx(:,k))) ... 
@@ -271,8 +273,9 @@ sum_e2 = 0;                    % An error in the synthetic state has been identi
 
 %% Perform the operation
 for k=1:L
+    e2(:,k) = xjk2-x2(:,k);
     %%  The control action is recalculated when triggered u(k)
-    if norm(xjk2-x2(:,k),2)^2 >= eipilon2+1/deta2*zeta2
+    if norm(e2(:,k),2)^2 >= eipilon2+1/deta2*zeta2
         xjk2 = x2(:,k);                              % Update the status of the most recent trigger
         e2(:,k) = xjk2-x2(:,k);
         x_n = (1-s_c_DoSattack(k))*(x2(:,k)+e2(:,k)+s_c_decattack(k)*(-2*x2(:,k)-2*e2(:,k)+wx(:,k))) ... 

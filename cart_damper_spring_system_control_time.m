@@ -100,8 +100,9 @@ end
 
 %% Perform the operation
 for k=1:L
+    e1(:,k) = xjk1-x1(:,k);
     %%  The control action is recalculated when triggered u(k)
-    if norm(xjk1-x1(:,k),2)^2 >= eipilon+1/deta1*zeta1
+    if norm(e1(:,k),2)^2 >= eipilon+1/deta1*zeta1
         xjk1 = x1(:,k);                              % Update the status of the most recent trigger
         e1(:,k) = xjk1-x1(:,k);
         x_n = (1-s_c_DoSattack(k))*(x1(:,k)+e1(:,k)+s_c_decattack(k)*(-2*x1(:,k)-2*e1(:,k)+wx(:,k))) ... 
@@ -205,8 +206,9 @@ end
 
 %% Perform the operation
 for k=1:L
+    e2(:,k) = xjk2-x2(:,k);
     %%  The control action is recalculated when triggered u(k)
-    if norm(xjk2-x2(:,k),2)^2 >= eipilon+1/deta2*zeta2
+    if norm(e2(:,k),2)^2 >= eipilon+1/deta2*zeta2
         xjk2 = x2(:,k);                              % Update the status of the most recent trigger
         e2(:,k) = xjk2-x2(:,k);
         x_n = (1-s_c_DoSattack(k))*(x2(:,k)+e2(:,k)+s_c_decattack(k)*(-2*x2(:,k)-2*e2(:,k)+wx(:,k))) ... 
@@ -310,8 +312,9 @@ end
 
 %% Perform the operation
 for k=1:L
+    e3(:,k) = xjk3-x3(:,k);
     %%  The control action is recalculated when triggered u(k)
-    if norm(xjk3-x3(:,k),2)^2 >= eipilon+1/deta3*zeta3
+    if norm(e3(:,k),2)^2 >= eipilon+1/deta3*zeta3
         xjk3 = x3(:,k);                              % Update the status of the most recent trigger
         e3(:,k) = xjk3-x3(:,k);
         x_n = (1-s_c_DoSattack(k))*(x3(:,k)+e3(:,k)+s_c_decattack(k)*(-2*x3(:,k)-2*e3(:,k)+wx(:,k))) ... 
@@ -406,8 +409,9 @@ sum_e4 = 0;                    % An error in the synthetic state has been identi
 
 %% Perform the operation
 for k=1:L
+    e4(:,k) = xjk4-x4(:,k);
     %%  The control action is recalculated when triggered u(k)
-    if norm(xjk4-x4(:,k),2)^2 >= eipilon+1/deta4*zeta4
+    if norm(e4(:,k),2)^2 >= eipilon+1/deta4*zeta4
         xjk4 = x4(:,k);                              % Update the status of the most recent trigger
         e4(:,k) = xjk4-x4(:,k);
         x_n = (1-s_c_DoSattack(k))*(x4(:,k)+e4(:,k)+s_c_decattack(k)*(-2*x4(:,k)-2*e4(:,k)+wx(:,k))) ... 

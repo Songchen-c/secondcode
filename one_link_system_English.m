@@ -33,40 +33,40 @@ dec_rou_y = 0.2;    % Probability of Output deception Attack
 dec_rou_u = 0.25;   % Probability of input deception Attack
 DoS_rou_y = 0.15;   % Probability of Output DoS Attack
 DoS_rou_u = 0.1;    % Probability of input DoS Attack
-% tao_xk = ones(1,L); % Delay of DoS Attack from Sensor to Controller
-% tao_uk = ones(1,L); % Delay of DoS Attack from Controller to Actuator
+tao_xk = ones(1,L); % Delay of DoS Attack from Sensor to Controller
+tao_uk = ones(1,L); % Delay of DoS Attack from Controller to Actuator
 
 %% 攻击初始化
-% s_c_decattack = zeros(1,L);% Sensor-to-controller deception attack sequence
-% c_a_decattack = zeros(1,L);% Controller-to-actuator deception attack sequence
-% s_c_DoSattack = zeros(1,L);% Sensor-to-controller DoS attack sequence
-% c_a_DoSattack = zeros(1,L);% Controller-to-actuator DoS attack sequence
+s_c_decattack = zeros(1,L);% Sensor-to-controller deception attack sequence
+c_a_decattack = zeros(1,L);% Controller-to-actuator deception attack sequence
+s_c_DoSattack = zeros(1,L);% Sensor-to-controller DoS attack sequence
+c_a_DoSattack = zeros(1,L);% Controller-to-actuator DoS attack sequence
 w1x = zeros(1,L);     % 外扰序列
 wx = zeros(1,L);           % Sensor-to-controller deception attack disturbance sequence
 wu = zeros(1,L);           % Controller-to-actuator deception attack disturbance sequence
 
 %% 攻击序列
 for k=1:L
-%     s_c_decattack(k) = randsrc(1,1,[1,0;dec_rou_y,1-dec_rou_y]);
-%     c_a_decattack(k) = randsrc(1,1,[1,0;dec_rou_u,1-dec_rou_u]);
-%     
-%     s_c_DoSattack(k) = randsrc(1,1,[1,0;DoS_rou_y,1-DoS_rou_y]);
-%     c_a_DoSattack(k) = randsrc(1,1,[1,0;DoS_rou_u,1-DoS_rou_u]);
-% 
-%     tao_xk(1,k) = round(rand(1,1)*(tao_x-1))+1;
-%     tao_uk(1,k) = round(rand(1,1)*(tao_u-1))+1;
+    s_c_decattack(k) = randsrc(1,1,[1,0;dec_rou_y,1-dec_rou_y]);
+    c_a_decattack(k) = randsrc(1,1,[1,0;dec_rou_u,1-dec_rou_u]);
+
+    s_c_DoSattack(k) = randsrc(1,1,[1,0;DoS_rou_y,1-DoS_rou_y]);
+    c_a_DoSattack(k) = randsrc(1,1,[1,0;DoS_rou_u,1-DoS_rou_u]);
+
+    tao_xk(1,k) = round(rand(1,1)*(tao_x-1))+1;
+    tao_uk(1,k) = round(rand(1,1)*(tao_u-1))+1;
 
     wx(:,k) = 0.5*sin(k);
     wu(:,k) = 0.1*cos(k);
     w1x(1,k) = 1.2*sin(3*k); 
 end
 
-load("c_a_decattack.mat")% Controller-to-actuator deception attack sequence
-load("c_a_DoSattack.mat")% Controller-to-actuator DoS attack sequence
-load("s_c_decattack.mat")% Sensor-to-controller deception attack sequence
-load("s_c_DoSattack.mat")% Sensor-to-controller DoS attack sequence
-load("tao_uk.mat")       % Delay of DoS Attack from Controller to Actuator
-load("tao_xk.mat")       % Delay of DoS Attack from Sensor to Controller
+% load("c_a_decattack.mat")% Controller-to-actuator deception attack sequence
+% load("c_a_DoSattack.mat")% Controller-to-actuator DoS attack sequence
+% load("s_c_decattack.mat")% Sensor-to-controller deception attack sequence
+% load("s_c_DoSattack.mat")% Sensor-to-controller DoS attack sequence
+% load("tao_uk.mat")       % Delay of DoS Attack from Controller to Actuator
+% load("tao_xk.mat")       % Delay of DoS Attack from Sensor to Controller
 
 %% proposed method
 x(:,1) = [-16;-8;-14;10];     % Initial values of system status parameters
@@ -124,7 +124,7 @@ for k=1:L
     end
 
     J(k) = x(:,k)'*Q*x(:,k)+u(k)'*R*u(k);           % Calculation of the performance index
-    x(:,k+1) = A*x(:,k) + B*u(k)+G*sin(x(3,k))++Dx*w1x(:,k); 
+    x(:,k+1) = A*x(:,k) + B*u(k)+G*sin(x(3,k))+Dx*w1x(:,k); 
     sum_e = sum_e+x(:,k)'*x(:,k);                   % Total calculation error
     zeta = theta*zeta+eipilon-norm(xjk-x(:,k),2)^2; % Formula for iterating the momentum factor
 
